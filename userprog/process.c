@@ -504,6 +504,14 @@ load_segment (struct file *file, off_t ofs, uint8_t *upage,
       struct page *p = page_allocate (upage, !writable);
       if (p == NULL)
         return false;
+      if (page_read_bytes == PGSIZE)
+      {
+        // Demand paged from the underlying file on its first access.
+      }
+      if (page_zero_bytes == PGSIZE)
+      [
+        // Create a new page consisting of all zeros at the first page fault.
+      ]
       if (page_read_bytes > 0) 
         {
           p->file = file;

@@ -1,4 +1,12 @@
-https://github.com/rpwilliams/CIS520_Proj3
+I primarily used this as a resource:
+    https://github.com/rpwilliams/CIS520_Proj3
+but that also linked these that I used:
+    http://people.cs.ksu.edu/~bstinson/courses/cis520/grandepintos.proj3
+    http://courses.cs.vt.edu/~cs3204/fall2009/pintos-vt-local/Project3Session.pdf
+
+
+
+
 
 https://github.com/dillstead/pintos/tree/assignment_3
 

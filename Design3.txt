@@ -20,10 +20,10 @@ Blake Wewer <bewewer@ksu.edu>
 >> Please cite any offline or online sources you consulted while
 >> preparing your submission, other than the Pintos documentation, course
 >> text, lecture notes, and course staff.
-
+	
 	http://people.cs.ksu.edu/~bstinson/courses/cis520/grandepintos.proj3
-    http://courses.cs.vt.edu/~cs3204/fall2009/pintos-vt-local/Project3Session.pdf
-	https://github.com/dillstead/pintos/tree/assignment_3
+   	http://courses.cs.vt.edu/~cs3204/fall2009/pintos-vt-local/Project3Session.pdf
+	https://github.com/rpwilliams/CIS520_Proj3
 
 			PAGE TABLE MANAGEMENT
 			=====================
@@ -109,7 +109,7 @@ None
 	in syscall.c. Then the threads exist in main memory with references to files that are 
 	in virtual memory which are mapped to main memory via the mapping struct.
 
-	If a page fault occurs, we must find a page to evict. And idf that page is privat then 
+	If a page fault occurs, we must find a page to evict. And idf that page is private then 
 	that page is not related to a file meaning we cant write back to an existing file. 
 	so we will swap the page out into the swapping space.If the page that is related 
 	to a file, we write back to the file on the disk. Both of these evictions will only occur
@@ -130,7 +130,8 @@ None
 >> implementation either does or does not share much of the code for
 >> the two situations.
 
-
+	In our version, the only time a page is written back to the original file is when a difference exists between the two.  
+	This method is close to demand-paging because it only loads or writes what it needs to and loads pages it actually needs into memory.
 
 			   SURVEY QUESTIONS
 			   ================
@@ -144,8 +145,12 @@ the quarter.
 >> In your opinion, was this assignment, or any one of the three problems
 >> in it, too easy or too hard?  Did it take too long or too little time?
 
+	I feel like this assignment was well balanced in difficulty and the length of each of the problems.
+
 >> Did you find that working on a particular part of the assignment gave
 >> you greater insight into some aspect of OS design?
+
+	Working in the syscall file gave me a reason to poke around and explore more of the file than I normally would have and benefitted me more.
 
 >> Is there some particular fact or hint we should give students in
 >> future quarters to help them solve the problems?  Conversely, did you

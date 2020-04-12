@@ -8,9 +8,9 @@
 
 >> Fill in the names of your group members.
 
-Blake Wewer
-Dominic Tassio
-Sreenikhil Keshamoni
+Dominic Tassio <dmtassio@ksu.edu>
+Sreenikhil Keshamoni <sreenikhil006@ksu.edu>
+Blake Wewer <bewewer@ksu.edu>
 
 ---- PRELIMINARIES ----
 
@@ -21,6 +21,10 @@ Sreenikhil Keshamoni
 >> preparing your submission, other than the Pintos documentation, course
 >> text, lecture notes, and course staff.
 
+	http://people.cs.ksu.edu/~bstinson/courses/cis520/grandepintos.proj3
+    http://courses.cs.vt.edu/~cs3204/fall2009/pintos-vt-local/Project3Session.pdf
+	https://github.com/dillstead/pintos/tree/assignment_3
+
 			PAGE TABLE MANAGEMENT
 			=====================
 
@@ -29,10 +33,27 @@ Sreenikhil Keshamoni
 >> A1: In a few paragraphs, describe the existing code for locating the
 >> frame, if any, that contains the data of a given page.
 
+	Every frame is mapped to a given page with a pointer to the page associated with the frame.
+	every frame also contains a pointer to its data with a pointer that points to the data via a 
+	kernal virtual base address. 
+	
+	Then in frame.c, two functions uses a frame that does not contain mapping to an 
+	existing page in the array frames. If a free frame is found when a frame's "page" variable 
+	being NULL then that frame's page is assigned to the to the page passed in. If a free frame is 
+	not found then a frame from the frame array must be evicted.
+
+	If a page to frame mapping cannot be created even after an attempt at a frame eviction, 
+	try_frame_alloc_and_alloc in frame.c is attempted a total of 3 times in frame_alloc_and_lock.
+
 ---- SYNCHRONIZATION ----
 
 >> A2: When two user processes both need a new frame at the same time,
 >> how are races avoided?
+
+	They are avoided with a lock given to each frame before assigning f->page to 
+	the page passed into try_frame_alloc_and_lock. After we acquire the lock then
+	f->page = page becomes part of the critical section ensuring SYNCHRONIZATION. 
+
 
 		       PAGING TO AND FROM DISK
 		       =======================
@@ -42,9 +63,30 @@ Sreenikhil Keshamoni
 >> B1: When a frame is required but none is free, some frame must be
 >> evicted.  Describe the algorithm used to choose a frame to evict.
 
+	The alogorithm used to evict a frame in try_frame_alloc_and_lock if 
+	there are no free frames available is the LRU algorithm. First we iterated 
+	through the list of frames twice by using "hand" to keep track of our
+	position in the list.
+
+	Then for every frame, we check to see if the page was accessed recently and if it
+	was then it means it was used recently. But need to search for least recently used 
+	frame. If the frame was *not* accessed recently then we evict the frame by calling 
+	page_out. If not we return NULL to indicate we were unsuccesful otherwise f->page 
+	becomes available, and it is set to the page passed in so the page is finally 
+	mapped to a frame.
+
 >> B2: Explain your heuristic for deciding whether a page fault for an
 >> invalid virtual address should cause the stack to be extended into
 >> the page that faulted.
+
+	First, we check to see if a user program exceeds the size of the stack when a
+	page fault occurs then we get the stack's size by getting the difference of 
+	PHYS_BASE and STACK_MAX. If the size exceeds, we grow the stack by allocating a new 
+	page with page_allocate.
+
+	We also ensure that the user stack pointer is "right below" the stack before growing 
+	the stack. This is done by making sure the fault address is within 32 bytes of the 
+	stack pointer. 
 
 			 MEMORY MAPPED FILES
 			 ===================
@@ -55,14 +97,29 @@ Sreenikhil Keshamoni
 >> `struct' member, global or static variable, `typedef', or
 >> enumeration.  Identify the purpose of each in 25 words or less.
 
+None
+
 ---- ALGORITHMS ----
 
 >> C2: Describe how memory mapped files integrate into your virtual
 >> memory subsystem.  Explain how the page fault and eviction
 >> processes differ between swap pages and other pages.
 
+	Memory mapped files integrate into the virtual memory subsystem by "mapping" struct 
+	in syscall.c. Then the threads exist in main memory with references to files that are 
+	in virtual memory which are mapped to main memory via the mapping struct.
+
+	If a page fault occurs, we must find a page to evict. And idf that page is privat then 
+	that page is not related to a file meaning we cant write back to an existing file. 
+	so we will swap the page out into the swapping space.If the page that is related 
+	to a file, we write back to the file on the disk. Both of these evictions will only occur
+	when the page is dirty.
+
 >> C3: Explain how you determine whether a new file mapping overlaps
 >> any existing segment.
+
+	We determine whether a new file mapping overlaps any existing segment by checking 
+	for duplicates in the hash tabele of pages then the duplicates are freed. 
 
 ---- RATIONALE ----
 
@@ -72,6 +129,8 @@ Sreenikhil Keshamoni
 >> that much of their implementation can be shared.  Explain why your
 >> implementation either does or does not share much of the code for
 >> the two situations.
+
+
 
 			   SURVEY QUESTIONS
 			   ================
